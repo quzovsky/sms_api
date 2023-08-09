@@ -33,12 +33,6 @@ import time
 app = FastAPI(swagger_ui_parameters={"syntaxHighlight": False})
 models.Base.metadata.create_all(bind=engine)
 
-# @app.on_event("startup")
-# async def startup_event():
-#     apply_migrations()
-# swagger_url = "https://sms.parsgreen.ir/swagger/docs/v2"
-# loaded_schema = httpx.get(swagger_url).json()
-# app.openapi_schema = loaded_schema
 
 def get_db():
     db = SessionLocal()
@@ -52,13 +46,13 @@ async def get_api_key(api_key: str = Header(...)):
     return api_key
 
 def validate_api_key(api_key: str = Depends(get_api_key)):
-    if api_key != "basic apikey:2DB34FDA-16A9-4B95-9070-4F3DC796AECD":
+    if api_key != "removed_for_security_reasons":
         raise HTTPException(status_code=403, detail="Invalid API key")
 
 async def stat_verify(db: Session = Depends(get_db)):
     nums=crud.stat_zero(db)
     if nums:
-        url="https://sms.parsgreen.ir/Apiv2/Message/SmsData"
+        url="removed_for_security_reasons"
         for i in nums:
             body=crud.get_body(db,i)
             target=crud.get_num(db,i)
@@ -73,14 +67,14 @@ async def recieve_and_send(Mobiles: list[str] = Body(...), SmsBody: str = Body(.
         "Mobiles": Mobiles,
         "SmsNumber": SmsNumber,
     }
-    url = "https://sms.parsgreen.ir/Apiv2/Message/SendSms"
-    headers = {'Authorization': 'basic apikey:2DB34FDA-16A9-4B95-9070-4F3DC796AECD'}
+    url = "removed_for_security_reasons"
+    headers = {'Authorization': 'removed_for_security_reasons'}
     async with httpx.AsyncClient() as client:
         result = await client.post(url, json=request_schema,headers=headers)
         result = result.json()
     for i in range(len(Mobiles)):
         async with httpx.AsyncClient() as client:
-            url2="https://sms.parsgreen.ir/Apiv2/Message/CheckDelivery"
+            url2="removed_for_security_reasons"
             res2= await client.post(url2,json={"ReqID": result['DataList'][i]['ReqID']},headers=headers)
             res2=res2.json()
         res=schemas.DataCreate(Phone=result['DataList'][i]['Mobile'],ReqID=str(res2['DeliveryStatus']),Body=SmsBody,num=SmsNumber)
